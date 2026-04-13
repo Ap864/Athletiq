@@ -13,7 +13,7 @@ struct ProfileView: View {
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var profileImage: UIImage? = nil
     
-    // 🔥 User input states
+    //  User input states
     @State private var name: String = ""
     @State private var username: String = ""
     @State private var phone: String = ""
@@ -61,7 +61,7 @@ struct ProfileView: View {
             }
             .padding(.top, 40)
             
-            // 🔥 Editable Fields
+            //  Editable Fields
             VStack(spacing: 20) {
                 
                 TextField("Name", text: $name)
