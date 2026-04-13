@@ -95,10 +95,25 @@ struct ContentView: View {
                 
                 // Bottom Navigation (visual only for now)
                 HStack(spacing: 30) {
-                    Text("Home")
-                    Text("Profile")
-                    Text("Shop")
-                    Text("Settings")
+                    NavigationLink(destination: ContentView()) {
+                        Text("Home")
+                    }
+                    
+                    NavigationLink(destination: ProfileView()) {
+                        Text("Profile")
+                    }
+                    
+                    NavigationLink(destination: ShopView()) {
+                        Text("Shop")
+                    }
+                    
+                    NavigationLink(destination: SettingsView()) {
+                        Text("Settings")
+                    }
+                }
+                .font(.custom("Inter", size: 24))
+                .foregroundColor(.black)
+                .padding(.bottom, 20)
                 }
                 .font(.custom("Inter", size: 24))
                 .foregroundColor(.black)
@@ -108,7 +123,7 @@ struct ContentView: View {
             .background(Color.white)
         }
     }
-}
+
 
 // Reusable card
 struct OptionCard: View {
