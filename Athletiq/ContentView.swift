@@ -42,7 +42,7 @@ struct ContentView: View {
                     
                     VStack(spacing: 20) {
                         
-                        // ✅ LEADERBOARD
+                        //  LEADERBOARD
                         NavigationLink(destination: LeaderboardView()) {
                             OptionCard(
                                 title: "Leaderboard",
@@ -62,10 +62,13 @@ struct ContentView: View {
                     VStack(spacing: 20) {
                         
                         // Shop (leave for now)
-                        OptionCard(
-                            title: "Shop",
-                            subtitle: "Buy rewards --->"
-                        )
+                        NavigationLink(destination: ShopView()) {
+                            OptionCard(
+                                title: "Shop",
+                                subtitle: "Buy rewards --->"
+                            )
+                        }
+                        
                         
                         // Settings
                         NavigationLink(destination: SettingsView()) {

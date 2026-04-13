@@ -9,6 +9,12 @@ import SwiftUI
 
 struct ShopView: View {
     var body: some View {
-        Text("Shop Screen")
+        VStack {
+            Text("Shop")
+                .font(.custom("Inter", size: 36))
+                .padding(.top, 30)
+            
+            Text("Rewards and items will be here")
+        }
     }
 }
