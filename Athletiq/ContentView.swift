@@ -6,7 +6,6 @@
 //
 
 
-
 import SwiftUI
 
 struct ContentView: View {
@@ -26,23 +25,26 @@ struct ContentView: View {
                 }
                 .padding(.top, 50)
                 
-                // Start Quiz (we’ll connect later)
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
-                        .frame(width: 180, height: 60)
-                    
-                    Text("Start Quiz")
-                        .font(.custom("Inter", size: 24))
-                        .foregroundColor(.black)
+                // 🔥 Start Quiz (FIXED)
+                NavigationLink(destination: StartQuizView()) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
+                            .frame(width: 180, height: 60)
+                        
+                        Text("Start Quiz")
+                            .font(.custom("Inter", size: 24))
+                            .foregroundColor(.black)
+                    }
                 }
+                .buttonStyle(.plain)
                 
                 // Options Grid
                 HStack(spacing: 20) {
                     
                     VStack(spacing: 20) {
                         
-                        //  LEADERBOARD
+                        // Leaderboard
                         NavigationLink(destination: LeaderboardView()) {
                             OptionCard(
                                 title: "Leaderboard",
@@ -50,7 +52,7 @@ struct ContentView: View {
                             )
                         }
                         
-                        // Profile (we’ll build next)
+                        // Profile
                         NavigationLink(destination: ProfileView()) {
                             OptionCard(
                                 title: "Profile",
@@ -61,14 +63,13 @@ struct ContentView: View {
                     
                     VStack(spacing: 20) {
                         
-                        // Shop (leave for now)
+                        // Shop
                         NavigationLink(destination: ShopView()) {
                             OptionCard(
                                 title: "Shop",
                                 subtitle: "Buy rewards --->"
                             )
                         }
-                        
                         
                         // Settings
                         NavigationLink(destination: SettingsView()) {
@@ -96,7 +97,7 @@ struct ContentView: View {
                     }
                 }
                 
-                // Bottom Navigation (visual only for now)
+                // Bottom Navigation
                 HStack(spacing: 30) {
                     NavigationLink(destination: ContentView()) {
                         Text("Home")
@@ -117,16 +118,12 @@ struct ContentView: View {
                 .font(.custom("Inter", size: 24))
                 .foregroundColor(.black)
                 .padding(.bottom, 20)
-                }
-                .font(.custom("Inter", size: 24))
-                .foregroundColor(.black)
-                .padding(.bottom, 20)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color.white)
         }
     }
-
+}
 
 // Reusable card
 struct OptionCard: View {
