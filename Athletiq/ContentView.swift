@@ -9,9 +9,25 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    // 🔥 COINS
+    @AppStorage("coins") var coins = 0
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
+                
+                // 🔥 COINS DISPLAY (TOP RIGHT)
+                HStack {
+                    Spacer()
+                    Text("🪙 \(coins)")
+                        .font(.custom("Inter", size: 20))
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.yellow.opacity(0.3))
+                        .cornerRadius(10)
+                        .padding(.trailing, 20)
+                }
                 
                 // Header
                 ZStack {
@@ -25,7 +41,7 @@ struct ContentView: View {
                 }
                 .padding(.top, 50)
                 
-                // START QUIZ (FIXED)
+                // Start Quiz
                 NavigationLink(destination: StartQuizView()) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
@@ -43,7 +59,6 @@ struct ContentView: View {
                     
                     VStack(spacing: 20) {
                         
-                        // LEADERBOARD
                         NavigationLink(destination: LeaderboardView()) {
                             OptionCard(
                                 title: "Leaderboard",
@@ -51,7 +66,6 @@ struct ContentView: View {
                             )
                         }
                         
-                        // Profile
                         NavigationLink(destination: ProfileView()) {
                             OptionCard(
                                 title: "Profile",
@@ -62,7 +76,6 @@ struct ContentView: View {
                     
                     VStack(spacing: 20) {
                         
-                        // Shop
                         NavigationLink(destination: ShopView()) {
                             OptionCard(
                                 title: "Shop",
@@ -70,7 +83,6 @@ struct ContentView: View {
                             )
                         }
                         
-                        // Settings
                         NavigationLink(destination: SettingsView()) {
                             OptionCard(
                                 title: "Settings",
@@ -150,12 +162,5 @@ struct OptionCard: View {
             }
             .padding()
         }
-    }
-}
-
-// Preview
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
     }
 }

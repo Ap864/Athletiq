@@ -16,23 +16,39 @@ struct QuizView: View {
     @State private var score = 0
     @State private var showScore = false
     
-    // TIMER
     @State private var timeRemaining = 20
     @State private var timer: Timer?
     
-    // LOCKED QUESTIONS
     @State private var quizQuestions: [Question] = []
     
-    //  NEW (FEEDBACK)
     @State private var selectedAnswer: Int? = nil
     @State private var showFeedback = false
+    
+    // 🔥 COINS
+    @AppStorage("coins") var coins = 0
+    @State private var coinsEarned = 0
     
     var body: some View {
         VStack(spacing: 20) {
             
+            // 🔥 COINS DISPLAY
+            HStack {
+                Spacer()
+                Text("🪙 \(coins)")
+                    .font(.headline)
+                    .padding(.trailing, 20)
+            }
+            
             if showScore {
                 Text("Final Score: \(score)/\(quizQuestions.count)")
                     .font(.largeTitle)
+                
+                Text("Coins Earned: \(coinsEarned)")
+                    .font(.title2)
+                
+                Text("Total Coins: \(coins)")
+                    .font(.headline)
+                
             } else if !quizQuestions.isEmpty {
                 
                 let question = quizQuestions[currentQuestionIndex]
@@ -54,7 +70,7 @@ struct QuizView: View {
                             .background(getColor(index: index, correct: question.correctAnswer))
                             .cornerRadius(10)
                     }
-                    .disabled(showFeedback) //  prevent spam clicks
+                    .disabled(showFeedback)
                 }
             }
         }
@@ -68,7 +84,6 @@ struct QuizView: View {
         }
     }
     
-    //  COLOR LOGIC
     func getColor(index: Int, correct: Int) -> Color {
         if showFeedback {
             if index == correct {
@@ -80,7 +95,6 @@ struct QuizView: View {
         return Color.gray.opacity(0.2)
     }
     
-    // SET QUESTIONS
     func setupQuiz() {
         let filtered = allQuestions.filter {
             $0.difficulty == selectedDifficulty
@@ -88,7 +102,6 @@ struct QuizView: View {
         quizQuestions = Array(filtered.shuffled().prefix(numberOfQuestions))
     }
     
-    // TIMER
     func startTimer() {
         timer?.invalidate()
         
@@ -113,7 +126,28 @@ struct QuizView: View {
         }
     }
     
-    //  UPDATED ANSWER FUNCTION
+    func awardCoins() {
+        let percentage = Double(score) / Double(quizQuestions.count)
+        
+        coinsEarned = 0
+        
+        guard quizQuestions.count >= 10 else { return }
+        guard percentage >= 0.8 else { return }
+        
+        switch selectedDifficulty {
+        case "Easy":
+            coinsEarned = 50
+        case "Medium":
+            coinsEarned = 75
+        case "Hard":
+            coinsEarned = 100
+        default:
+            break
+        }
+        
+        coins += coinsEarned
+    }
+    
     func checkAnswer(selected: Int) {
         timer?.invalidate()
         
@@ -126,7 +160,6 @@ struct QuizView: View {
             score += 1
         }
         
-        // wait 1 second before moving on
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             nextQuestion()
         }
@@ -139,6 +172,7 @@ struct QuizView: View {
         if currentQuestionIndex + 1 < quizQuestions.count {
             currentQuestionIndex += 1
         } else {
+            awardCoins()
             showScore = true
         }
     }
