@@ -16,12 +16,16 @@ struct QuizView: View {
     @State private var score = 0
     @State private var showScore = false
     
-    //  TIMER
+    // TIMER
     @State private var timeRemaining = 20
     @State private var timer: Timer?
     
-    //  LOCKED QUESTIONS (THIS FIXES EVERYTHING)
+    // LOCKED QUESTIONS
     @State private var quizQuestions: [Question] = []
+    
+    //  NEW (FEEDBACK)
+    @State private var selectedAnswer: Int? = nil
+    @State private var showFeedback = false
     
     var body: some View {
         VStack(spacing: 20) {
@@ -33,7 +37,6 @@ struct QuizView: View {
                 
                 let question = quizQuestions[currentQuestionIndex]
                 
-                // TIMER
                 Text("Time: \(timeRemaining)")
                     .font(.headline)
                 
@@ -48,32 +51,40 @@ struct QuizView: View {
                         Text(question.options[index])
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.gray.opacity(0.2))
+                            .background(getColor(index: index, correct: question.correctAnswer))
                             .cornerRadius(10)
                     }
+                    .disabled(showFeedback) //  prevent spam clicks
                 }
             }
         }
         .padding()
-        
-        //  SET QUESTIONS ONCE
         .onAppear {
             setupQuiz()
             startTimer()
         }
-        
-        // RESET TIMER WHEN QUESTION CHANGES
         .onChange(of: currentQuestionIndex) { _ in
             startTimer()
         }
     }
     
-    //  THIS IS THE KEY FIX
+    //  COLOR LOGIC
+    func getColor(index: Int, correct: Int) -> Color {
+        if showFeedback {
+            if index == correct {
+                return Color.green
+            } else if index == selectedAnswer {
+                return Color.red
+            }
+        }
+        return Color.gray.opacity(0.2)
+    }
+    
+    // SET QUESTIONS
     func setupQuiz() {
         let filtered = allQuestions.filter {
             $0.difficulty == selectedDifficulty
         }
-        
         quizQuestions = Array(filtered.shuffled().prefix(numberOfQuestions))
     }
     
@@ -102,23 +113,33 @@ struct QuizView: View {
         }
     }
     
-    func nextQuestion() {
-        if currentQuestionIndex + 1 < quizQuestions.count {
-            currentQuestionIndex += 1
-        } else {
-            showScore = true
-        }
-    }
-    
+    //  UPDATED ANSWER FUNCTION
     func checkAnswer(selected: Int) {
         timer?.invalidate()
         
         let question = quizQuestions[currentQuestionIndex]
         
+        selectedAnswer = selected
+        showFeedback = true
+        
         if selected == question.correctAnswer {
             score += 1
         }
         
-        nextQuestion()
+        // wait 1 second before moving on
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            nextQuestion()
+        }
+    }
+    
+    func nextQuestion() {
+        selectedAnswer = nil
+        showFeedback = false
+        
+        if currentQuestionIndex + 1 < quizQuestions.count {
+            currentQuestionIndex += 1
+        } else {
+            showScore = true
+        }
     }
 }
