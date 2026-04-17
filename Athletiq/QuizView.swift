@@ -9,67 +9,62 @@ import SwiftUI
 
 struct QuizView: View {
     
+    var selectedDifficulty: String
+    var numberOfQuestions: Int
+    
     @State private var currentQuestionIndex = 0
     @State private var score = 0
-    @State private var showResult = false
+    @State private var showScore = false
     
-    var body: some View {
-        
-        let question = sampleQuestions[currentQuestionIndex]
-        
-        VStack(spacing: 30) {
-            
-            // Question Counter
-            Text("Question \(currentQuestionIndex + 1)/\(sampleQuestions.count)")
-                .font(.headline)
-            
-            // Question Text
-            Text(question.question)
-                .font(.title2)
-                .multilineTextAlignment(.center)
-                .padding()
-            
-            // Answer Buttons
-            ForEach(0..<question.options.count, id: \.self) { index in
-                Button(action: {
-                    answerTapped(index)
-                }) {
-                    Text(question.options[index])
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.gray.opacity(0.3))
-                        .cornerRadius(10)
-                }
-            }
-            
-            Spacer()
+    // 🔥 FILTER + RANDOMIZE (THIS IS THE IMPORTANT PART)
+    var quizQuestions: [Question] {
+        let filtered = allQuestions.filter {
+            $0.difficulty == selectedDifficulty
         }
-        .padding()
-        .alert("Quiz Finished", isPresented: $showResult) {
-            Button("OK") {
-                resetQuiz()
-            }
-        } message: {
-            Text("Your score: \(score)/\(sampleQuestions.count)")
-        }
+        return Array(filtered.shuffled().prefix(numberOfQuestions))
     }
     
-    func answerTapped(_ index: Int) {
-        let question = sampleQuestions[currentQuestionIndex]
+    var body: some View {
+        VStack(spacing: 20) {
+            
+            if showScore {
+                Text("Final Score: \(score)/\(quizQuestions.count)")
+                    .font(.largeTitle)
+            } else {
+                
+                let question = quizQuestions[currentQuestionIndex]
+                
+                Text(question.question)
+                    .font(.title2)
+                    .padding()
+                
+                ForEach(0..<question.options.count, id: \.self) { index in
+                    Button(action: {
+                        checkAnswer(selected: index)
+                    }) {
+                        Text(question.options[index])
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(10)
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+    
+    func checkAnswer(selected: Int) {
+        let question = quizQuestions[currentQuestionIndex]
         
-        if index == question.correctAnswer {
+        if selected == question.correctAnswer {
             score += 1
         }
         
-        if currentQuestionIndex + 1 < sampleQuestions.count {
+        if currentQuestionIndex + 1 < quizQuestions.count {
             currentQuestionIndex += 1
         } else {
-            showResult = true
+            showScore = true
         }
-    }
-    
-    func resetQuiz() {
-        currentQuestionIndex = 0
-        score = 0
     }
 }

@@ -25,7 +25,7 @@ struct ContentView: View {
                 }
                 .padding(.top, 50)
                 
-                // 🔥 Start Quiz (FIXED)
+                // START QUIZ (FIXED)
                 NavigationLink(destination: StartQuizView()) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 10)
@@ -37,14 +37,13 @@ struct ContentView: View {
                             .foregroundColor(.black)
                     }
                 }
-                .buttonStyle(.plain)
                 
                 // Options Grid
                 HStack(spacing: 20) {
                     
                     VStack(spacing: 20) {
                         
-                        // Leaderboard
+                        // LEADERBOARD
                         NavigationLink(destination: LeaderboardView()) {
                             OptionCard(
                                 title: "Leaderboard",
@@ -124,6 +123,7 @@ struct ContentView: View {
         }
     }
 }
+
 
 // Reusable card
 struct OptionCard: View {

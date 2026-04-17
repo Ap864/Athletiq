@@ -12,4 +12,6 @@ struct Question: Identifiable {
     let question: String
     let options: [String]
     let correctAnswer: Int
+    let category: String
+    let difficulty: String
 }
