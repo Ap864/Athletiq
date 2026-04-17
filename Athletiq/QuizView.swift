@@ -24,53 +24,81 @@ struct QuizView: View {
     @State private var selectedAnswer: Int? = nil
     @State private var showFeedback = false
     
-    // 🔥 COINS
+    //  GLOBAL STORAGE
     @AppStorage("coins") var coins = 0
+    @AppStorage("hasExtraTime") var hasExtraTime = false
+    @AppStorage("hasDoubleCoins") var hasDoubleCoins = false
+    @AppStorage("hasFiftyFifty") var hasFiftyFifty = false // 🔥 NEW
+    @AppStorage("nameColor") var nameColor = "black"
+    @AppStorage("username") var username = "Player"
+    
     @State private var coinsEarned = 0
+    
+    //  POWERUPS
+    @State private var extraTimeUses = 3
+    @State private var usedFiftyFifty = false
+    @State private var hiddenAnswers: Set<Int> = []
     
     var body: some View {
         VStack(spacing: 20) {
             
-            // 🔥 COINS DISPLAY
+            // TOP BAR
             HStack {
+                Text(username)
+                    .foregroundColor(getNameColor())
+                
                 Spacer()
+                
                 Text("🪙 \(coins)")
-                    .font(.headline)
-                    .padding(.trailing, 20)
             }
+            .padding(.horizontal)
             
             if showScore {
                 Text("Final Score: \(score)/\(quizQuestions.count)")
                     .font(.largeTitle)
                 
                 Text("Coins Earned: \(coinsEarned)")
-                    .font(.title2)
-                
                 Text("Total Coins: \(coins)")
-                    .font(.headline)
                 
             } else if !quizQuestions.isEmpty {
                 
                 let question = quizQuestions[currentQuestionIndex]
                 
                 Text("Time: \(timeRemaining)")
-                    .font(.headline)
+                
+                //  +5 SECONDS
+                if hasExtraTime && extraTimeUses > 0 {
+                    Button("+5 Seconds (\(extraTimeUses))") {
+                        timeRemaining += 5
+                        extraTimeUses -= 1
+                    }
+                }
+                
+                //  50/50 BUTTON
+                if hasFiftyFifty && !usedFiftyFifty {
+                    Button("50/50") {
+                        useFiftyFifty(correctIndex: question.correctAnswer)
+                    }
+                }
                 
                 Text(question.question)
-                    .font(.title2)
                     .padding()
                 
                 ForEach(0..<question.options.count, id: \.self) { index in
-                    Button(action: {
-                        checkAnswer(selected: index)
-                    }) {
-                        Text(question.options[index])
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(getColor(index: index, correct: question.correctAnswer))
-                            .cornerRadius(10)
+                    
+                    //  HIDE WRONG ANSWERS
+                    if !hiddenAnswers.contains(index) {
+                        Button(action: {
+                            checkAnswer(selected: index)
+                        }) {
+                            Text(question.options[index])
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(getColor(index: index, correct: question.correctAnswer))
+                                .cornerRadius(10)
+                        }
+                        .disabled(showFeedback)
                     }
-                    .disabled(showFeedback)
                 }
             }
         }
@@ -78,9 +106,33 @@ struct QuizView: View {
         .onAppear {
             setupQuiz()
             startTimer()
+            
+            extraTimeUses = 3
+            usedFiftyFifty = false
+            hiddenAnswers.removeAll()
         }
         .onChange(of: currentQuestionIndex) { _ in
             startTimer()
+            hiddenAnswers.removeAll()
+        }
+    }
+    
+    //  50/50 LOGIC
+    func useFiftyFifty(correctIndex: Int) {
+        var wrongIndexes = [0,1,2,3].filter { $0 != correctIndex }
+        wrongIndexes.shuffle()
+        
+        hiddenAnswers = Set(wrongIndexes.prefix(2))
+        
+        usedFiftyFifty = true
+        hasFiftyFifty = false // consume
+    }
+    
+    func getNameColor() -> Color {
+        switch nameColor {
+        case "red": return .red
+        case "blue": return .blue
+        default: return .black
         }
     }
     
@@ -106,14 +158,10 @@ struct QuizView: View {
         timer?.invalidate()
         
         switch selectedDifficulty {
-        case "Easy":
-            timeRemaining = 20
-        case "Medium":
-            timeRemaining = 16
-        case "Hard":
-            timeRemaining = 12
-        default:
-            timeRemaining = 20
+        case "Easy": timeRemaining = 20
+        case "Medium": timeRemaining = 16
+        case "Hard": timeRemaining = 12
+        default: timeRemaining = 20
         }
         
         timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { _ in
@@ -135,14 +183,15 @@ struct QuizView: View {
         guard percentage >= 0.8 else { return }
         
         switch selectedDifficulty {
-        case "Easy":
-            coinsEarned = 50
-        case "Medium":
-            coinsEarned = 75
-        case "Hard":
-            coinsEarned = 100
-        default:
-            break
+        case "Easy": coinsEarned = 50
+        case "Medium": coinsEarned = 75
+        case "Hard": coinsEarned = 100
+        default: break
+        }
+        
+        if hasDoubleCoins {
+            coinsEarned *= 2
+            hasDoubleCoins = false
         }
         
         coins += coinsEarned

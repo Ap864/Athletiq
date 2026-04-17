@@ -10,16 +10,23 @@ import SwiftUI
 
 struct ContentView: View {
     
-    // 🔥 COINS
+    //  ADDED
     @AppStorage("coins") var coins = 0
+    @AppStorage("nameColor") var nameColor = "black"
+    @AppStorage("username") var username = "Player"
     
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
                 
-                // 🔥 COINS DISPLAY (TOP RIGHT)
+                //  ADDED TOP BAR
                 HStack {
+                    Text(username)
+                        .foregroundColor(getNameColor())
+                        .font(.headline)
+                    
                     Spacer()
+                    
                     Text("🪙 \(coins)")
                         .font(.custom("Inter", size: 20))
                         .padding(.horizontal, 12)
@@ -134,10 +141,19 @@ struct ContentView: View {
             .background(Color.white)
         }
     }
+    
+    //  ADDED
+    func getNameColor() -> Color {
+        switch nameColor {
+        case "red": return .red
+        case "blue": return .blue
+        default: return .black
+        }
+    }
 }
 
 
-// Reusable card
+// Reusable card (UNCHANGED)
 struct OptionCard: View {
     var title: String
     var subtitle: String
