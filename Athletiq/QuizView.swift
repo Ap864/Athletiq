@@ -24,17 +24,17 @@ struct QuizView: View {
     @State private var selectedAnswer: Int? = nil
     @State private var showFeedback = false
     
-    //  GLOBAL STORAGE
+    // 🔥 GLOBAL STORAGE
     @AppStorage("coins") var coins = 0
     @AppStorage("hasExtraTime") var hasExtraTime = false
     @AppStorage("hasDoubleCoins") var hasDoubleCoins = false
-    @AppStorage("hasFiftyFifty") var hasFiftyFifty = false // 🔥 NEW
+    @AppStorage("hasFiftyFifty") var hasFiftyFifty = false
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
     
     @State private var coinsEarned = 0
     
-    //  POWERUPS
+    // 🔥 POWERUPS
     @State private var extraTimeUses = 3
     @State private var usedFiftyFifty = false
     @State private var hiddenAnswers: Set<Int> = []
@@ -42,7 +42,6 @@ struct QuizView: View {
     var body: some View {
         VStack(spacing: 20) {
             
-            // TOP BAR
             HStack {
                 Text(username)
                     .foregroundColor(getNameColor())
@@ -66,7 +65,6 @@ struct QuizView: View {
                 
                 Text("Time: \(timeRemaining)")
                 
-                //  +5 SECONDS
                 if hasExtraTime && extraTimeUses > 0 {
                     Button("+5 Seconds (\(extraTimeUses))") {
                         timeRemaining += 5
@@ -74,7 +72,6 @@ struct QuizView: View {
                     }
                 }
                 
-                //  50/50 BUTTON
                 if hasFiftyFifty && !usedFiftyFifty {
                     Button("50/50") {
                         useFiftyFifty(correctIndex: question.correctAnswer)
@@ -85,8 +82,6 @@ struct QuizView: View {
                     .padding()
                 
                 ForEach(0..<question.options.count, id: \.self) { index in
-                    
-                    //  HIDE WRONG ANSWERS
                     if !hiddenAnswers.contains(index) {
                         Button(action: {
                             checkAnswer(selected: index)
@@ -117,7 +112,6 @@ struct QuizView: View {
         }
     }
     
-    //  50/50 LOGIC
     func useFiftyFifty(correctIndex: Int) {
         var wrongIndexes = [0,1,2,3].filter { $0 != correctIndex }
         wrongIndexes.shuffle()
@@ -125,7 +119,7 @@ struct QuizView: View {
         hiddenAnswers = Set(wrongIndexes.prefix(2))
         
         usedFiftyFifty = true
-        hasFiftyFifty = false // consume
+        hasFiftyFifty = false
     }
     
     func getNameColor() -> Color {
@@ -174,6 +168,7 @@ struct QuizView: View {
         }
     }
     
+    // 🔥 FIXED DOUBLE COINS LOGIC
     func awardCoins() {
         let percentage = Double(score) / Double(quizQuestions.count)
         
@@ -189,12 +184,17 @@ struct QuizView: View {
         default: break
         }
         
+        // ✅ APPLY DOUBLE FIRST, THEN ADD
         if hasDoubleCoins {
             coinsEarned *= 2
-            hasDoubleCoins = false
         }
         
         coins += coinsEarned
+        
+        // ✅ CONSUME AFTER APPLYING
+        if hasDoubleCoins {
+            hasDoubleCoins = false
+        }
     }
     
     func checkAnswer(selected: Int) {
