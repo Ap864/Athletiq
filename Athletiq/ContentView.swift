@@ -10,144 +10,166 @@ import SwiftUI
 
 struct ContentView: View {
     
-    //  ADDED
     @AppStorage("coins") var coins = 0
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
-    
-    //  ADDED (language)
     @AppStorage("appLanguage") var appLanguage = "en"
     
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 30) {
-                
-                //  ADDED TOP BAR
-                HStack {
-                    Text(username)
-                        .foregroundColor(getNameColor())
-                        .font(.headline)
-                    
-                    Spacer()
-                    
-                    Text("🪙 \(coins)")
-                        .font(.custom("Inter", size: 20))
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(Color.yellow.opacity(0.3))
-                        .cornerRadius(10)
-                        .padding(.trailing, 20)
-                }
-                
-                // Header
+        
+        TabView {
+            
+            // 🏠 HOME TAB
+            NavigationStack {
                 ZStack {
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
-                        .frame(width: 334, height: 65)
                     
-                    //  CHANGED
-                    Text(localized("welcome", language: appLanguage))
-                        .font(.custom("Inter", size: 36))
-                        .foregroundColor(.black)
-                }
-                .padding(.top, 50)
-                
-                // Start Quiz
-                NavigationLink(destination: StartQuizView()) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 10)
-                            .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
-                            .frame(width: 180, height: 60)
-                        
-                        //  CHANGED
-                        Text(localized("start_quiz", language: appLanguage))
-                            .font(.custom("Inter", size: 24))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                // Options Grid
-                HStack(spacing: 20) {
+                    LinearGradient(
+                        colors: [Color.blue.opacity(0.2), Color.white],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                    .ignoresSafeArea()
                     
-                    VStack(spacing: 20) {
+                    VStack(spacing: 25) {
                         
-                        NavigationLink(destination: LeaderboardView()) {
-                            OptionCard(
-                                title: localized("leaderboard", language: appLanguage), //
-                                subtitle: "See Top Players --->"
-                            )
+                        // Top Bar
+                        HStack {
+                            Text(username)
+                                .foregroundColor(getNameColor())
+                                .font(.title3.bold())
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 6) {
+                                Text("🪙")
+                                Text("\(coins)")
+                            }
+                            .font(.headline)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(12)
                         }
+                        .padding(.horizontal)
+                        .padding(.top, 10)
                         
-                        NavigationLink(destination: ProfileView()) {
-                            OptionCard(
-                                title: localized("profile", language: appLanguage), //
-                                subtitle: "View & edit your profile --->"
+                        // Header
+                        Text(localized("welcome", language: appLanguage))
+                            .font(.system(size: 38, weight: .bold))
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [.blue, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
                             )
-                        }
-                    }
-                    
-                    VStack(spacing: 20) {
                         
-                        NavigationLink(destination: ShopView()) {
-                            OptionCard(
-                                title: localized("shop", language: appLanguage), //
-                                subtitle: "Buy rewards --->"
-                            )
+                        // Start Quiz
+                        NavigationLink(destination: StartQuizView()) {
+                            Text(localized("start_quiz", language: appLanguage))
+                                .font(.title2.bold())
+                                .frame(maxWidth: .infinity)
+                                .padding()
+                                .background(Color.blue)
+                                .foregroundColor(.white)
+                                .cornerRadius(15)
+                                .shadow(radius: 5)
                         }
+                        .padding(.horizontal)
                         
-                        NavigationLink(destination: SettingsView()) {
-                            OptionCard(
-                                title: localized("settings", language: appLanguage), //
-                                subtitle: "Preferences & more --->"
-                            )
+                        // Grid
+                        LazyVGrid(columns: [
+                            GridItem(.flexible()),
+                            GridItem(.flexible())
+                        ], spacing: 20) {
+                            
+                            NavigationLink(destination: LeaderboardView()) {
+                                ModernCard(
+                                    title: localized("leaderboard", language: appLanguage),
+                                    subtitle: localized("see_top_players", language: appLanguage),
+                                    icon: "trophy.fill"
+                                )
+                            }
+                            
+                            NavigationLink(destination: ProfileView()) {
+                                ModernCard(
+                                    title: localized("profile", language: appLanguage),
+                                    subtitle: localized("edit_profile", language: appLanguage),
+                                    icon: "person.fill"
+                                )
+                            }
+                            
+                            NavigationLink(destination: ShopView()) {
+                                ModernCard(
+                                    title: localized("shop", language: appLanguage),
+                                    subtitle: localized("buy_rewards", language: appLanguage),
+                                    icon: "cart.fill"
+                                )
+                            }
+                            
+                            NavigationLink(destination: SettingsView()) {
+                                ModernCard(
+                                    title: localized("settings", language: appLanguage),
+                                    subtitle: localized("preferences", language: appLanguage),
+                                    icon: "gearshape.fill"
+                                )
+                            }
                         }
+                        .padding(.horizontal)
+                        
+                        Spacer()
+                        
+                        // Tutorial
+                        NavigationLink(destination: TutorialView()) {
+                            Text(localized("tutorial", language: appLanguage))
+                                .font(.headline)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.gray.opacity(0.2))
+                                .cornerRadius(12)
+                        }
+                        .padding(.horizontal)
                     }
                 }
-                .padding(.top, 30)
-                
-                Spacer()
-                
-                // Tutorial button
-                NavigationLink(destination: TutorialView()) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 5)
-                            .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
-                            .frame(height: 40)
-                        
-                        Text("? Tutorial")
-                            .font(.custom("Inter", size: 24))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                // Bottom Navigation
-                HStack(spacing: 30) {
-                    NavigationLink(destination: ContentView()) {
-                        Text("Home")
-                    }
-                    
-                    NavigationLink(destination: ProfileView()) {
-                        Text("Profile")
-                    }
-                    
-                    NavigationLink(destination: ShopView()) {
-                        Text("Shop")
-                    }
-                    
-                    NavigationLink(destination: SettingsView()) {
-                        Text("Settings")
-                    }
-                }
-                .font(.custom("Inter", size: 24))
-                .foregroundColor(.black)
-                .padding(.bottom, 20)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.white)
+            .tabItem {
+                Image(systemName: "house.fill")
+                Text(localized("home", language: appLanguage))
+            }
+            
+            
+            // 👤 PROFILE TAB
+            NavigationStack {
+                ProfileView()
+            }
+            .tabItem {
+                Image(systemName: "person.fill")
+                Text(localized("profile", language: appLanguage))
+            }
+            
+            
+            // 🛒 SHOP TAB
+            NavigationStack {
+                ShopView()
+            }
+            .tabItem {
+                Image(systemName: "cart.fill")
+                Text(localized("shop", language: appLanguage))
+            }
+            
+            
+            // ⚙️ SETTINGS TAB
+            NavigationStack {
+                SettingsView()
+            }
+            .tabItem {
+                Image(systemName: "gearshape.fill")
+                Text(localized("settings", language: appLanguage))
+            }
         }
     }
     
-    //  ADDED
+    
     func getNameColor() -> Color {
         switch nameColor {
         case "red": return .red
@@ -158,33 +180,35 @@ struct ContentView: View {
 }
 
 
-// Reusable card (UNCHANGED)
-struct OptionCard: View {
+// Card (UNCHANGED)
+struct ModernCard: View {
     var title: String
     var subtitle: String
+    var icon: String
     
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
-                .frame(width: 170, height: 110)
+        VStack(spacing: 8) {
+            Image(systemName: icon)
+                .font(.system(size: 28))
+                .foregroundColor(.blue)
             
-            VStack(spacing: 8) {
-                Text(title)
-                    .font(.custom("Inter", size: 24))
-                    .foregroundColor(.black)
-                
-                Text(subtitle)
-                    .font(.custom("Inter", size: 15))
-                    .foregroundColor(.black)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(nil)
-                    .padding(.horizontal, 5)
-            }
-            .padding()
+            Text(title)
+                .font(.headline)
+            
+            Text(subtitle)
+                .font(.caption)
+                .multilineTextAlignment(.center)
+                .foregroundColor(.gray)
         }
+        .frame(maxWidth: .infinity, minHeight: 130)
+        .padding()
+        .background(Color.white)
+        .cornerRadius(20)
+        .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 3)
     }
 }
+
+
 #Preview {
     ContentView()
 }
