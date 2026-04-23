@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LanguageView: View {
     
-    @AppStorage("selectedLanguage") private var selectedLanguage = "en"
+    @AppStorage("appLanguage") private var selectedLanguage = "en"
     
     let languages = [
         ("English", "en"),

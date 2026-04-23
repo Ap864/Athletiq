@@ -17,6 +17,9 @@ struct ShopView: View {
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
     
+    //  ADDED (language)
+    @AppStorage("appLanguage") var appLanguage = "en"
+    
     var body: some View {
         VStack(spacing: 20) {
             
@@ -33,14 +36,16 @@ struct ShopView: View {
             }
             .padding()
             
-            Text("Shop")
+            //  CHANGED
+            Text(localized("shop", language: appLanguage))
                 .font(.largeTitle)
             
             ScrollView {
                 VStack(spacing: 20) {
                     
                     //  POWERUPS
-                    Text("Power-Ups")
+                    //  CHANGED
+                    Text(localized("powerups", language: appLanguage))
                         .font(.title2)
                     
                     shopButton(
@@ -77,7 +82,8 @@ struct ShopView: View {
                     }
                     
                     //  COSMETICS
-                    Text("Name Colors")
+                    //  CHANGED
+                    Text(localized("name_colors", language: appLanguage))
                         .font(.title2)
                         .padding(.top)
                     

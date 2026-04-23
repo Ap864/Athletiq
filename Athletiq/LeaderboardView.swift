@@ -16,6 +16,9 @@ struct Player: Identifiable {
 
 struct LeaderboardView: View {
     
+    //  ADDED (language)
+    @AppStorage("appLanguage") var appLanguage = "en"
+    
     //  Toggle between views
     @State private var showMyRank = false
     
@@ -32,7 +35,7 @@ struct LeaderboardView: View {
         VStack {
             
             // Title
-            Text("Leaderboard")
+            Text(localized("leaderboard", language: appLanguage)) //  CHANGED
                 .font(.custom("Inter", size: 36))
                 .padding(.top, 20)
             
@@ -42,7 +45,7 @@ struct LeaderboardView: View {
                 Button(action: {
                     showMyRank = false
                 }) {
-                    Text("Top")
+                    Text(localized("top", language: appLanguage)) //  CHANGED
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(showMyRank ? Color.gray.opacity(0.3) : Color.gray)
@@ -52,7 +55,7 @@ struct LeaderboardView: View {
                 Button(action: {
                     showMyRank = true
                 }) {
-                    Text("My Rank")
+                    Text(localized("my_rank", language: appLanguage)) //  CHANGED
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(showMyRank ? Color.gray : Color.gray.opacity(0.3))
@@ -69,7 +72,7 @@ struct LeaderboardView: View {
                 // YOUR RANK DISPLAY
                 VStack(spacing: 20) {
                     
-                    Text("Your Rank")
+                    Text(localized("your_rank", language: appLanguage)) //  CHANGED
                         .font(.custom("Inter", size: 28))
                     
                     // Calculate rank
@@ -81,7 +84,9 @@ struct LeaderboardView: View {
                         .font(.custom("Inter", size: 50))
                     
                     Text(currentUser.name)
-                    Text("Score: \(currentUser.score)")
+                    
+                    //  CHANGED
+                    Text("\(localized("score", language: appLanguage)): \(currentUser.score)")
                 }
                 
                 Spacer()
@@ -96,7 +101,6 @@ struct LeaderboardView: View {
                             
                             HStack {
                                 
-                                // 🥇🥈🥉 MEDALS
                                 if index == 0 {
                                     Text("🥇")
                                 } else if index == 1 {

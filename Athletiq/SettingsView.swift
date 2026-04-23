@@ -11,43 +11,46 @@ struct SettingsView: View {
     
     @AppStorage("isDarkMode") private var isDarkMode = false
     
+    //  ADDED (language)
+    @AppStorage("appLanguage") var appLanguage = "en"
+    
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 25) {
                     
                     // Title
-                    Text("Settings")
+                    Text(localized("settings", language: appLanguage)) // 🔥 CHANGED
                         .font(.custom("Inter", size: 40))
                         .foregroundColor(Color(red: 0.50, green: 0.23, blue: 0.27))
                         .padding(.top, 20)
                     
                     // MARK: - Account Section
-                    Text("Account Settings")
+                    Text(localized("account_settings", language: appLanguage)) // 🔥 CHANGED
                         .font(.custom("Inter", size: 22).weight(.bold))
                     
                     VStack(spacing: 15) {
                         
                         // Profile
                         NavigationLink(destination: ProfileView()) {
-                            SettingsRow(title: "Profile and Accounts")
+                            SettingsRow(title: localized("profile_accounts", language: appLanguage)) // 🔥
                         }
                         
-                        //  About / Help (ADDED)
+                        //  About / Help
                         NavigationLink(destination: AboutView()) {
-                            SettingsRow(title: "About / Help")
+                            SettingsRow(title: localized("about_help", language: appLanguage)) // 🔥
                         }
                     }
                     
                     // MARK: - Personalization Section
-                    Text("Personalization")
+                    Text(localized("personalization", language: appLanguage)) //  CHANGED
                         .font(.custom("Inter", size: 22).weight(.bold))
                     
                     VStack(spacing: 15) {
                         
                         // 🌙 Dark Mode Toggle
                         HStack {
-                            Text("Dark Mode")
+                            Text(localized("dark_mode", language: appLanguage)) //  CHANGED
                                 .foregroundColor(.white)
                             
                             Spacer()
@@ -61,12 +64,12 @@ struct SettingsView: View {
                         
                         // 🌍 Language
                         NavigationLink(destination: LanguageView()) {
-                            SettingsRow(title: "Language")
+                            SettingsRow(title: localized("language", language: appLanguage)) //
                         }
                         
                         // 🎨 Appearance
                         NavigationLink(destination: AppearanceView()) {
-                            SettingsRow(title: "Appearance")
+                            SettingsRow(title: localized("appearance", language: appLanguage)) // 
                         }
                     }
                     
@@ -78,12 +81,11 @@ struct SettingsView: View {
             .navigationTitle("")
             .navigationBarTitleDisplayMode(.inline)
         }
-        //  DARK MODE APPLIED HERE
         .preferredColorScheme(isDarkMode ? .dark : .light)
     }
 }
 
-//  Reusable Row
+//  Reusable Row (UNCHANGED)
 struct SettingsRow: View {
     var title: String
     

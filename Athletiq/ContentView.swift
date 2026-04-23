@@ -15,6 +15,9 @@ struct ContentView: View {
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
     
+    //  ADDED (language)
+    @AppStorage("appLanguage") var appLanguage = "en"
+    
     var body: some View {
         NavigationStack {
             VStack(spacing: 30) {
@@ -42,7 +45,8 @@ struct ContentView: View {
                         .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
                         .frame(width: 334, height: 65)
                     
-                    Text("Welcome to Athletiq")
+                    //  CHANGED
+                    Text(localized("welcome", language: appLanguage))
                         .font(.custom("Inter", size: 36))
                         .foregroundColor(.black)
                 }
@@ -55,7 +59,8 @@ struct ContentView: View {
                             .fill(Color(red: 0.85, green: 0.85, blue: 0.85))
                             .frame(width: 180, height: 60)
                         
-                        Text("Start Quiz")
+                        //  CHANGED
+                        Text(localized("start_quiz", language: appLanguage))
                             .font(.custom("Inter", size: 24))
                             .foregroundColor(.black)
                     }
@@ -68,14 +73,14 @@ struct ContentView: View {
                         
                         NavigationLink(destination: LeaderboardView()) {
                             OptionCard(
-                                title: "Leaderboard",
+                                title: localized("leaderboard", language: appLanguage), //
                                 subtitle: "See Top Players --->"
                             )
                         }
                         
                         NavigationLink(destination: ProfileView()) {
                             OptionCard(
-                                title: "Profile",
+                                title: localized("profile", language: appLanguage), //
                                 subtitle: "View & edit your profile --->"
                             )
                         }
@@ -85,14 +90,14 @@ struct ContentView: View {
                         
                         NavigationLink(destination: ShopView()) {
                             OptionCard(
-                                title: "Shop",
+                                title: localized("shop", language: appLanguage), //
                                 subtitle: "Buy rewards --->"
                             )
                         }
                         
                         NavigationLink(destination: SettingsView()) {
                             OptionCard(
-                                title: "Settings",
+                                title: localized("settings", language: appLanguage), //
                                 subtitle: "Preferences & more --->"
                             )
                         }
@@ -179,4 +184,7 @@ struct OptionCard: View {
             .padding()
         }
     }
+}
+#Preview {
+    ContentView()
 }

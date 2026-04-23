@@ -24,7 +24,7 @@ struct QuizView: View {
     @State private var selectedAnswer: Int? = nil
     @State private var showFeedback = false
     
-    // 🔥 GLOBAL STORAGE
+    //  GLOBAL STORAGE
     @AppStorage("coins") var coins = 0
     @AppStorage("hasExtraTime") var hasExtraTime = false
     @AppStorage("hasDoubleCoins") var hasDoubleCoins = false
@@ -32,9 +32,12 @@ struct QuizView: View {
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
     
+    //  ADDED (language)
+    @AppStorage("appLanguage") var appLanguage = "en"
+    
     @State private var coinsEarned = 0
     
-    // 🔥 POWERUPS
+    //  POWERUPS
     @State private var extraTimeUses = 3
     @State private var usedFiftyFifty = false
     @State private var hiddenAnswers: Set<Int> = []
@@ -53,17 +56,21 @@ struct QuizView: View {
             .padding(.horizontal)
             
             if showScore {
-                Text("Final Score: \(score)/\(quizQuestions.count)")
+                //  CHANGED
+                Text("\(localized("final_score", language: appLanguage)): \(score)/\(quizQuestions.count)")
                     .font(.largeTitle)
                 
-                Text("Coins Earned: \(coinsEarned)")
+                //  CHANGED
+                Text("\(localized("coins_earned", language: appLanguage)): \(coinsEarned)")
+                
                 Text("Total Coins: \(coins)")
                 
             } else if !quizQuestions.isEmpty {
                 
                 let question = quizQuestions[currentQuestionIndex]
                 
-                Text("Time: \(timeRemaining)")
+                //  CHANGED
+                Text("\(localized("time", language: appLanguage)): \(timeRemaining)")
                 
                 if hasExtraTime && extraTimeUses > 0 {
                     Button("+5 Seconds (\(extraTimeUses))") {
@@ -168,7 +175,6 @@ struct QuizView: View {
         }
     }
     
-    // 🔥 FIXED DOUBLE COINS LOGIC
     func awardCoins() {
         let percentage = Double(score) / Double(quizQuestions.count)
         
@@ -184,14 +190,12 @@ struct QuizView: View {
         default: break
         }
         
-        // ✅ APPLY DOUBLE FIRST, THEN ADD
         if hasDoubleCoins {
             coinsEarned *= 2
         }
         
         coins += coinsEarned
         
-        // ✅ CONSUME AFTER APPLYING
         if hasDoubleCoins {
             hasDoubleCoins = false
         }
