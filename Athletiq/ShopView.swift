@@ -9,21 +9,18 @@ import SwiftUI
 
 struct ShopView: View {
     
-    //  GLOBAL STORAGE
     @AppStorage("coins") var coins = 0
     @AppStorage("hasExtraTime") var hasExtraTime = false
-    @AppStorage("hasDoubleCoins") var hasDoubleCoins = false
     @AppStorage("hasFiftyFifty") var hasFiftyFifty = false
+    @AppStorage("hasRevealAnswer") var hasRevealAnswer = false //
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
     
-    //  ADDED (language)
     @AppStorage("appLanguage") var appLanguage = "en"
     
     var body: some View {
         VStack(spacing: 20) {
             
-            //  TOP BAR
             HStack {
                 Text(username)
                     .foregroundColor(getNameColor())
@@ -36,15 +33,12 @@ struct ShopView: View {
             }
             .padding()
             
-            //  CHANGED
             Text(localized("shop", language: appLanguage))
                 .font(.largeTitle)
             
             ScrollView {
                 VStack(spacing: 20) {
                     
-                    //  POWERUPS
-                    //  CHANGED
                     Text(localized("powerups", language: appLanguage))
                         .font(.title2)
                     
@@ -60,29 +54,28 @@ struct ShopView: View {
                     }
                     
                     shopButton(
-                        title: "Double Coins Boost (1 Use)",
-                        price: 200,
-                        owned: false
-                    ) {
-                        if coins >= 200 {
-                            coins -= 200
-                            hasDoubleCoins = true
-                        }
-                    }
-                    
-                    shopButton(
                         title: "50/50 Hint (1 Use)",
                         price: 75,
-                        owned: false
+                        owned: hasFiftyFifty
                     ) {
-                        if coins >= 75 {
+                        if coins >= 75 && !hasFiftyFifty {
                             coins -= 75
                             hasFiftyFifty = true
                         }
                     }
                     
-                    //  COSMETICS
-                    //  CHANGED
+                    //  NEW POWERUP
+                    shopButton(
+                        title: "Reveal Correct Answer (1 Use)",
+                        price: 500,
+                        owned: hasRevealAnswer
+                    ) {
+                        if coins >= 500 && !hasRevealAnswer {
+                            coins -= 500
+                            hasRevealAnswer = true
+                        }
+                    }
+                    
                     Text(localized("name_colors", language: appLanguage))
                         .font(.title2)
                         .padding(.top)
@@ -114,7 +107,6 @@ struct ShopView: View {
         }
     }
     
-    //  BUTTON COMPONENT
     func shopButton(title: String, price: Int, owned: Bool, action: @escaping () -> Void) -> some View {
         Button(action: action) {
             HStack {
@@ -129,7 +121,6 @@ struct ShopView: View {
         .disabled(owned)
     }
     
-    //  COLOR FUNCTION
     func getNameColor() -> Color {
         switch nameColor {
         case "red": return .red

@@ -29,23 +29,33 @@ struct QuizView: View {
     @AppStorage("hasExtraTime") var hasExtraTime = false
     @AppStorage("hasDoubleCoins") var hasDoubleCoins = false
     @AppStorage("hasFiftyFifty") var hasFiftyFifty = false
+    @AppStorage("hasRevealAnswer") var hasRevealAnswer = false
     @AppStorage("nameColor") var nameColor = "black"
     @AppStorage("username") var username = "Player"
     
-    //  ADDED (language)
     @AppStorage("appLanguage") var appLanguage = "en"
     
     @State private var coinsEarned = 0
     
-    //  POWERUPS
+    //  FIXED POWERUPS
     @State private var extraTimeUses = 3
-    @State private var usedFiftyFifty = false
     @State private var hiddenAnswers: Set<Int> = []
+    
+    //  NEW (quit popup)
+    @State private var showQuitAlert = false
+    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack(spacing: 20) {
             
+            //  TOP BAR WITH QUIT BUTTON
             HStack {
+                Button("Quit") {
+                    showQuitAlert = true
+                }
+                
+                Spacer()
+                
                 Text(username)
                     .foregroundColor(getNameColor())
                 
@@ -56,11 +66,10 @@ struct QuizView: View {
             .padding(.horizontal)
             
             if showScore {
-                //  CHANGED
+                
                 Text("\(localized("final_score", language: appLanguage)): \(score)/\(quizQuestions.count)")
                     .font(.largeTitle)
                 
-                //  CHANGED
                 Text("\(localized("coins_earned", language: appLanguage)): \(coinsEarned)")
                 
                 Text("Total Coins: \(coins)")
@@ -69,7 +78,6 @@ struct QuizView: View {
                 
                 let question = quizQuestions[currentQuestionIndex]
                 
-                //  CHANGED
                 Text("\(localized("time", language: appLanguage)): \(timeRemaining)")
                 
                 if hasExtraTime && extraTimeUses > 0 {
@@ -79,9 +87,17 @@ struct QuizView: View {
                     }
                 }
                 
-                if hasFiftyFifty && !usedFiftyFifty {
+                if hasFiftyFifty {
                     Button("50/50") {
-                        useFiftyFifty(correctIndex: question.correctAnswer)
+                        applyFiftyFifty(correctIndex: question.correctAnswer)
+                    }
+                }
+                
+                if hasRevealAnswer {
+                    Button("Reveal Answer") {
+                        let correct = question.correctAnswer
+                        checkAnswer(selected: correct)
+                        hasRevealAnswer = false
                     }
                 }
                 
@@ -110,22 +126,32 @@ struct QuizView: View {
             startTimer()
             
             extraTimeUses = 3
-            usedFiftyFifty = false
             hiddenAnswers.removeAll()
         }
         .onChange(of: currentQuestionIndex) { _ in
             startTimer()
             hiddenAnswers.removeAll()
         }
+        .navigationBarBackButtonHidden(true)
+        .interactiveDismissDisabled(true)
+        
+        //  ALERT
+        .alert("Quit Quiz?", isPresented: $showQuitAlert) {
+            Button("Cancel", role: .cancel) { }
+            
+            Button("Quit", role: .destructive) {
+                dismiss()
+            }
+        } message: {
+            Text("You will lose your progress.")
+        }
     }
     
-    func useFiftyFifty(correctIndex: Int) {
-        var wrongIndexes = [0,1,2,3].filter { $0 != correctIndex }
+    func applyFiftyFifty(correctIndex: Int) {
+        var wrongIndexes = Array(0..<4).filter { $0 != correctIndex }
         wrongIndexes.shuffle()
         
         hiddenAnswers = Set(wrongIndexes.prefix(2))
-        
-        usedFiftyFifty = true
         hasFiftyFifty = false
     }
     
@@ -192,13 +218,10 @@ struct QuizView: View {
         
         if hasDoubleCoins {
             coinsEarned *= 2
+            hasDoubleCoins = false
         }
         
         coins += coinsEarned
-        
-        if hasDoubleCoins {
-            hasDoubleCoins = false
-        }
     }
     
     func checkAnswer(selected: Int) {
